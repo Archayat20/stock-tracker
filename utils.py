@@ -28,13 +28,16 @@ def metric_rows(data, periods_user):
     colm5.metric("Daily Change %", f"{percentage_change.iloc[-1]*100:.2f}%")
  
 def fundementals(stock):
-    info = stock.info
-    st.subheader("Company Fundamentals")
-    col1, col2, col3, col4 = st.columns(4)
-    col1.metric("Market Cap",    f"${info.get('marketCap', 0)/1e9:.2f}B")
-    col2.metric("P/E Ratio",     f"{info.get('trailingPE', 'N/A')}")
-    col3.metric("Revenue",       f"${info.get('totalRevenue', 0)/1e9:.2f}B")
-    col4.metric("Profit Margin", f"{info.get('profitMargins', 0)*100:.2f}%")
+    try:
+        info = stock.info
+        st.subheader("Company Fundamentals")
+        col1, col2, col3, col4 = st.columns(4)
+        col1.metric("Market Cap",    f"${info.get('marketCap', 0)/1e9:.2f}B")
+        col2.metric("P/E Ratio",     f"{info.get('trailingPE', 'N/A')}")
+        col3.metric("Revenue",       f"${info.get('totalRevenue', 0)/1e9:.2f}B")
+        col4.metric("Profit Margin", f"{info.get('profitMargins', 0)*100:.2f}%")
+    except Exception:
+        st.warning("⚠️ Fundamentals unavailable right now — Yahoo Finance rate limit reached. Try again in a moment.")
  
 def csv_file(data, ticker):
     csv = data.to_csv()
