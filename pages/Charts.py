@@ -17,7 +17,7 @@ st.markdown("""<style>.block-container {
     }</style>""", unsafe_allow_html=True)
 
 dates = ["5d", "1mo", "3mo", "6mo", "1y", "2y", "5y", "10y", "ytd", "max"]
-st.title("📊 Charts")
+st.title("📊 Dashboard")
 
 ticker = st.text_input("Enter stock ticker:", value="AAPL")
 periods_user = st.selectbox("Enter the period", dates, index=2)
