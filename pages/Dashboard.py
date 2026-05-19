@@ -9,8 +9,6 @@ from utils import (
     candle_sticks,
     csv_file,
 )
-st.set_page_config(page_title="Dashboard")
-
 st.markdown("""<style>.block-container {
         max-width: 80%;
         padding-left: 5%;
