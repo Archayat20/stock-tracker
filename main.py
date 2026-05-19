@@ -1,5 +1,5 @@
 import streamlit as st
-from utils import get_data, metric_rows, fundementals
+
 
 st.markdown("""<style>.block-container {
         max-width: 80%;
