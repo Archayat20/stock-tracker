@@ -1,7 +1,10 @@
 import streamlit as st
 from utils import (
     get_data,
-    metric_rows,
+    price_summary,        # ← add
+    price_context,        # ← add
+    volume_section,       # ← add
+    trend_section,        # ← add
     fundementals,
     show_closeprice_linechart,
     cumulative_returns,
@@ -9,25 +12,34 @@ from utils import (
     candle_sticks,
     csv_file,
 )
-st.markdown("""<style>.block-container {
-        max-width: 80%;
-        padding-left: 5%;
-        padding-right: 5%;
-    }</style>""", unsafe_allow_html=True)
 
-dates = ["5d", "1mo", "3mo", "6mo", "1y", "2y", "5y", "10y", "ytd", "max"]
-st.title("📊 Dashboard")
+st.set_page_config(page_title="Trading Dashboard", layout="wide")
 
-ticker = st.text_input("Enter stock ticker:", value="AAPL")
-periods_user = st.selectbox("Enter the period", dates, index=2)
+# only keeps padding fix, everything else handled by config.toml
+st.markdown("""
+<style>
+  .block-container { padding: 1.5rem 2rem; max-width: 100%; }
+</style>
+""", unsafe_allow_html=True)
 
-if st.button("Show Chart"):
-    result = get_data(ticker, periods_user)
-    if result is not None:
+st.title("📊 Stock Dashboard")
+st.caption("Powered by Yahoo Finance")
+st.divider()
+
+dates = ["5d","1mo","3mo","6mo","1y","2y","5y","ytd","max"]
+c1, c2, _ = st.columns([1, 1, 4])
+with c1:
+    ticker = st.text_input("Ticker", value="AAPL")
+with c2:
+    period = st.selectbox("Period", dates, index=2)
+
+if st.button("Show Chart", type="primary"):
+    result = get_data(ticker, period)
+    if result:
         data, stock = result
         st.session_state["chart_data"]   = data
         st.session_state["chart_stock"]  = stock
-        st.session_state["chart_period"] = periods_user
+        st.session_state["chart_period"] = period
         st.session_state["chart_ticker"] = ticker
 
 if "chart_data" in st.session_state:
@@ -36,24 +48,24 @@ if "chart_data" in st.session_state:
     period = st.session_state["chart_period"]
     ticker = st.session_state["chart_ticker"]
 
-    metric_rows(data, period)
-    fundementals(stock)
-    show_closeprice_linechart(data)
-    cumulative_returns(data)
-    bar_chart(data)
-    candle_sticks(data)
+    left, center, right = st.columns([1.2, 2.5, 1.2])
 
-    # compare section
-    st.subheader("Compare Stocks")
-    tickers = st.multiselect("Select tickers to compare", ["AAPL", "MSFT", "GOOG", "TSLA"], default=["AAPL"])
-    if tickers:
-        cols = st.columns(len(tickers))
-        for t, col in zip(tickers, cols):
-            with col:
-                st.write(f"**{t}**")
-                result = get_data(t, period)
-                if result is not None:
-                    data, _ = result
-                    st.line_chart(data["Close"])
+    with left:
+        price_summary(data, period)
+        st.divider()
+        trend_section(data)
 
-    csv_file(st.session_state["chart_data"], ticker)
+    with center:
+        show_closeprice_linechart(data)
+        cumulative_returns(data)
+        bar_chart(data)
+        candle_sticks(data)
+
+    with right:
+        price_context(data)
+        st.divider()
+        volume_section(data)
+        st.divider()
+        fundementals(stock)
+        st.divider()
+        csv_file(data, ticker)
