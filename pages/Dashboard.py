@@ -1,59 +1,45 @@
 import streamlit as st
-from utils import (
-    get_data,
-    metric_rows,
-    fundementals,
-    show_closeprice_linechart,
-    cumulative_returns,
-    bar_chart,
-    candle_sticks,
-    csv_file,
-)
+from utils import get_data, metric_rows, fundementals
+
 st.markdown("""<style>.block-container {
         max-width: 80%;
         padding-left: 5%;
         padding-right: 5%;
     }</style>""", unsafe_allow_html=True)
 
-dates = ["5d", "1mo", "3mo", "6mo", "1y", "2y", "5y", "10y", "ytd", "max"]
-st.title("📊 Dashboard")
 
-ticker = st.text_input("Enter stock ticker:", value="AAPL")
-periods_user = st.selectbox("Enter the period", dates, index=2)
-
-if st.button("Show Chart"):
-    result = get_data(ticker, periods_user)
-    if result is not None:
-        data, stock = result
-        st.session_state["chart_data"]   = data
-        st.session_state["chart_stock"]  = stock
-        st.session_state["chart_period"] = periods_user
-        st.session_state["chart_ticker"] = ticker
-
-if "chart_data" in st.session_state:
-    data   = st.session_state["chart_data"]
-    stock  = st.session_state["chart_stock"]
-    period = st.session_state["chart_period"]
-    ticker = st.session_state["chart_ticker"]
-
-    metric_rows(data, period)
-    fundementals(stock)
-    show_closeprice_linechart(data)
-    cumulative_returns(data)
-    bar_chart(data)
-    candle_sticks(data)
-
-    # compare section
-    st.subheader("Compare Stocks")
-    tickers = st.multiselect("Select tickers to compare", ["AAPL", "MSFT", "GOOG", "TSLA"], default=["AAPL"])
-    if tickers:
-        cols = st.columns(len(tickers))
-        for t, col in zip(tickers, cols):
-            with col:
-                st.write(f"**{t}**")
-                result = get_data(t, period)
-                if result is not None:
-                    data, _ = result
-                    st.line_chart(data["Close"])
-
-    csv_file(st.session_state["chart_data"], ticker)
+st.title("📈 Stock Price Tracker")
+st.markdown("""
+---
+### About this project
+ 
+Hi, I'm **Archayan**, an 18-year-old CS student with a strong interest in AI and data.
+I built this app from scratch using **Python** and **Streamlit** to explore how real-world
+financial data can be fetched, processed, and visualised in a clean, interactive way.
+ 
+**What this app does:**
+- 📊 Pulls live stock data using the **yfinance** API
+- 📈 Displays closing prices, candlestick charts, volume bars, and cumulative returns
+- 💼 Tracks a personal portfolio and calculates total value based on shares owned
+- ⚖️ Compares multiple stocks side by side with correlation scores and best/worst day tables
+- 📰 Fetches live news headlines per ticker with date filtering and links to full articles
+ 
+**Skills & tools used:**
+- **Python** — core logic, data processing, and API calls
+- **Streamlit** — building and deploying the interactive web app
+- **yfinance** — fetching real-time and historical market data
+- **Plotly** — interactive candlestick charts
+- **Pandas** — data manipulation and analysis
+- **Multi-page architecture** — structured the app with a `pages/` folder and shared `utils.py` to avoid repeated code
+- **Session state** — persisting data across pages without re-fetching
+- **API handling** — parsing nested JSON responses and handling missing or broken data gracefully
+ 
+**What I learned:**
+Building this taught me how to structure a real project, not just write scripts.
+I learned how to separate concerns, reuse code properly, handle real-world messy data,
+and think about the user experience — not just whether the code runs.
+ 
+---
+""")
+ 
+st.caption("Use the sidebar to navigate between pages.")
