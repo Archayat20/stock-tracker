@@ -56,7 +56,7 @@ if "chart_data" in st.session_state:
         trend_section(data)
 
     with center:
-        show_closeprice_linechart(data)
+        show_closeprice_linechart(data,ticker)
         cumulative_returns(data)
         bar_chart(data)
         candle_sticks(data)
