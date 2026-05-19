@@ -63,11 +63,12 @@ def fundementals(stock):
     info = stock.info
     st.markdown("#### 🏢 Fundamentals")
     c1, c2 = st.columns(2)
-    c1.metric("Market Cap",    f"${info.get('marketCap', 0) / 1e9:.1f}B")
+    c1.metric("Market Cap",    f"${info.get('marketCap', 0) / 1e9:.1f}B" if info.get('marketCap') else "N/A")
     c2.metric("P/E Ratio",     f"{info.get('trailingPE', 'N/A')}")
     c3, c4 = st.columns(2)
-    c3.metric("Revenue",       f"${info.get('totalRevenue', 0) / 1e9:.1f}B")
-    c4.metric("Profit Margin", f"{info.get('profitMargins', 0) * 100:.1f}%")
+    c3.metric("Revenue",       f"${info.get('totalRevenue', 0) / 1e9:.1f}B" if info.get('totalRevenue') else "N/A")
+    c4.metric("Profit Margin", f"{info.get('profitMargins', 0) * 100:.1f}%" if info.get('profitMargins') else "N/A")
+
 
 def show_closeprice_linechart(data):
     st.markdown("#### Close Price + MA20")
